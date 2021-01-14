@@ -21,18 +21,24 @@ io.sockets.on("connection", socket => {
 
 //TODO determine if useful to intercept from server
 io.sockets.on("disconnect", socket => {
-  io.sockets.emit("disconnect", socket.id);
+  io.sockets.emit(
+      "disconnect",
+      socket.id
+  );
   gameRoom.players = gameRoom.players.filter(player => player.id !== socket.id);
 });
 
-
-
 function updateGame() {
-    gameRoom.checkCollisions();
-    io.sockets.emit("heartbeat", {
-    players:gameRoom.getPlayers(),
-    projectiles:gameRoom.getProjectiles()
-  });
+    gameRoom.checkBulletCollisions();
+    gameRoom.removeEphemeralObjects();
+    io.sockets.emit(
+        "heartbeat",
+        {
+            players:gameRoom.players,
+            projectiles:gameRoom.projectiles,
+            buffs:gameRoom.buffs
+        }
+    );
 }
 
 

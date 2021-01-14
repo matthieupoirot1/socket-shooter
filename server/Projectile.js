@@ -10,6 +10,7 @@ class Projectile {
         this.ownerId = ownerId;
         this.rgb = rgb;
 
+        //calculate movement
         this.direction = {};
         this.direction.x = mousePos.mouseX - playerPos.playerX;
         this.direction.y = mousePos.mouseY - playerPos.playerY;
@@ -22,6 +23,9 @@ class Projectile {
         setInterval(()=>{
             this.moveBullet();
         }, 15)
+
+        //calculate lifetime of object in seconds
+        this.creation = Date.now();
     }
 
     moveBullet(){

@@ -1,43 +1,38 @@
 
 class Buff {
-    constructor(socketId) {
+    constructor() {
         /** @type {number} */
-        this.type = Math.floor(Math.random() * Math.floor(4));
+        this.type = Math.floor(Math.random() * Math.floor(3));
         /** @type {number} */
         this.x = Math.random() * 400 + 1;
         /** @type {number} */
         this.y = Math.random() * 400 + 1;
-        /** @type {string} */
-        this.id = socketId;
-        /** @type {{r: number, b: number, g: number}}*/
-        this.rgb = {
-            r: Math.random() * 255,
-            g: Math.random() * 255,
-            b: Math.random() * 255,
-        }
-    }
 
-    /**
-     * Listener to handle "move" event received from server
-     * @param moveObject "move" event information received through client socket
-     * @param {string} moveObject.axis axis received to increase corresponding position
-     */
-    handlePlayerMovement(moveObject) {
-        switch (moveObject.axis) {
-            case "x":
-                this.x += 5;
-                break;
-            case "-x":
-                this.x -= 5;
-                break;
-            case "y":
-                this.y += 5;
-                break;
-            case "-y":
-                this.y -= 5;
-                break;
+        //choose color from type
+        if(this.type === 1){
+            /** @type {{r: number, b: number, g: number}}*/
+            this.rgb = {
+                r: 255,
+                g: 0,
+                b: 0,
+            };
+        }else if (this.type === 2){
+            this.rgb = {
+                r: 0,
+                g: 255,
+                b: 0,
+            };
+        }else{
+            this.rgb = {
+                r: 0,
+                g: 0,
+                b: 255,
+            };
         }
+
+        //calculate lifetime of object in seconds
+        this.creation = Date.now();
     }
 }
 
-module.exports = Player;
+module.exports = Buff;

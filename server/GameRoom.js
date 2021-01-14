@@ -1,3 +1,4 @@
+const Buff = require("./Buff");
 const Player = require("./Player");
 const Projectile = require("./Projectile");
 
@@ -7,33 +8,50 @@ class GameRoom{
         this.projectiles = [];
         /** @type {Player[]} */
         this.players = [];
+        /** @type {Buff[]} */
+        this.buffs = [];
     }
 
+    /**
+     * @param playerSocket
+     */
     addPlayer(playerSocket){
         let playerId = playerSocket.id;
+
         //creating and pushing new player
         let clientSocketPlayer = new Player(playerId);
-        console.log(clientSocketPlayer);
         this.players.push(clientSocketPlayer);
-        console.log("pushing new player :");
+        console.log(`Added new player : ${clientSocketPlayer}`);
+
+        //handling player movement
         playerSocket.on("move", (moveObject)=>{
+            console.log("moving")
             clientSocketPlayer.handlePlayerMovement(moveObject)
         });
 
+        //handling player shooting
         playerSocket.on("shoot", (mousePos)=>{
-            this.projectiles.push(new Projectile({playerY:clientSocketPlayer.y, playerX:clientSocketPlayer.x}, mousePos, clientSocketPlayer.rgb, clientSocketPlayer.id));
+            this.projectiles.push(new Projectile(
+                {playerY:clientSocketPlayer.y, playerX:clientSocketPlayer.x},
+                mousePos,
+                clientSocketPlayer.rgb,
+                clientSocketPlayer.id
+            ));
         });
-
-        //TODO calculate direction and movement of projectile on server
 
         //if client socket is detected as "disconnected
         playerSocket.on("disconnect", () => {
-            //update server's players list
-            this.players = this.players.filter(player => player.id !== playerSocket.id);
+            console.log(`Removing player : ${playerSocket.id}`)
+            this.removePlayer(playerSocket.id);
         });
+
+        // if first player of server
+        if(this.players.length === 1){
+            this.generateBuffs();
+        }
     }
 
-    checkCollisions(){
+    checkBulletCollisions(){
         this.players.forEach((player)=>{
             this.projectiles.forEach((projectile)=>{
                 if(player.id !== projectile.ownerId) {
@@ -49,11 +67,26 @@ class GameRoom{
         });
     }
 
-    getPlayers(){
-        return this.players;
+    generateBuffs() {
+        setInterval(()=>{
+            console.log("hey adding new buff!")
+            this.buffs.push(new Buff());
+        }, 5000)
     }
-    getProjectiles(){
-        return this.projectiles;
+
+    removePlayer(collection, playerId){
+        this.players = this.players.filter(player => player.id !== playerId);
+    }
+
+    removeEphemeralObjects(){
+        let time = Date.now();
+        this.projectiles = this.projectiles.filter((projectileToRemove) => {
+            console.log("removing projectile");
+            return time - projectileToRemove.creation < 5000
+        });
+        this.buffs = this.buffs.filter((buffToRemove) => {
+            return time - buffToRemove.creation < 5000
+        });
     }
 }
 

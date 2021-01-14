@@ -7,6 +7,7 @@ serverSocket.on('connect_failed', err => console.log(err));
 
 let players = [];
 let projectiles = [];
+let buffs = [];
 
 function setup() {
   frameRate(60);
@@ -21,6 +22,7 @@ function setup() {
     players = serverElements.players.map((serverPlayer) => new Player(serverPlayer));
     //replace and reconstruct projectiles
     projectiles = serverElements.projectiles.map((serverProjectile)=> new Projectile(serverProjectile));
+    buffs = serverElements.buffs.map((serverBuff)=> new Buff(serverBuff));
   });
 
   serverSocket.on("disconnect", playerId => removePlayer(playerId));
@@ -35,6 +37,10 @@ function draw() {
   players.forEach(player => player.draw());
   //draw every projectiles
   projectiles.forEach(projectile => projectile.draw());
+  //draw every buffs
+  buffs.forEach(buff=> {
+    buff.draw();
+  });
 }
 
 function mouseClicked(){
