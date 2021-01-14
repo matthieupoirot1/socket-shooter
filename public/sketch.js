@@ -20,12 +20,18 @@ function setup() {
   serverSocket.on("heartbeat", (serverElements) => {
     //replace and reconstruct players
     players = serverElements.players.map((serverPlayer) => new Player(serverPlayer));
+
     //replace and reconstruct projectiles
     projectiles = serverElements.projectiles.map((serverProjectile)=> new Projectile(serverProjectile));
+
+    //replace and reconstruct buffs
     buffs = serverElements.buffs.map((serverBuff)=> new Buff(serverBuff));
   });
 
-  serverSocket.on("disconnect", playerId => removePlayer(playerId));
+  serverSocket.on(
+      "disconnect",
+      serverSocket.emit('disconnect')
+  );
 }
 
 function draw() {
@@ -33,12 +39,19 @@ function draw() {
   //remove everything
   clear();
   background(220);
+
   //draw every players
-  players.forEach(player => player.draw());
+  players.forEach((player) => {
+    player.draw()
+  });
+
   //draw every projectiles
-  projectiles.forEach(projectile => projectile.draw());
+  projectiles.forEach((projectile) => {
+    projectile.draw()
+  });
+
   //draw every buffs
-  buffs.forEach(buff=> {
+  buffs.forEach((buff) => {
     buff.draw();
   });
 }

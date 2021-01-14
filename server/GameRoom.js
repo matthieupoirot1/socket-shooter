@@ -25,7 +25,6 @@ class GameRoom{
 
         //handling player movement
         playerSocket.on("move", (moveObject)=>{
-            console.log("moving")
             clientSocketPlayer.handlePlayerMovement(moveObject)
         });
 
@@ -46,7 +45,7 @@ class GameRoom{
         });
 
         // if first player of server
-        if(this.players.length === 1){
+        if(this.players.length <= 1){
             this.generateBuffs();
         }
     }
@@ -74,14 +73,13 @@ class GameRoom{
         }, 5000)
     }
 
-    removePlayer(collection, playerId){
+    removePlayer(playerId){
         this.players = this.players.filter(player => player.id !== playerId);
     }
 
     removeEphemeralObjects(){
         let time = Date.now();
         this.projectiles = this.projectiles.filter((projectileToRemove) => {
-            console.log("removing projectile");
             return time - projectileToRemove.creation < 5000
         });
         this.buffs = this.buffs.filter((buffToRemove) => {

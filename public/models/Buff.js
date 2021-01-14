@@ -16,10 +16,8 @@ class Buff {
         this.rgb = buff.rgb;
     }
 
-
     draw() {
         fill(this.rgb.r, this.rgb.g, this.rgb.b);
         square(this.x, this.y, 15);
     }
-
 }
