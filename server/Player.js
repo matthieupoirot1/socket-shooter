@@ -15,6 +15,8 @@ class Player {
       g: Math.random() * 255,
       b: Math.random() * 255,
     }
+    this.score = 0;
+    this.damages = 10;
   }
 
   /**
@@ -37,6 +39,14 @@ class Player {
         this.y -= 5;
         break;
     }
+  }
+
+  reset(){
+    // reset dead player
+    this.hp = 100;
+    this.x = Math.random() * 400 + 1;
+    this.y = Math.random() * 400 + 1;
+    this.damages = 10;
   }
 }
 

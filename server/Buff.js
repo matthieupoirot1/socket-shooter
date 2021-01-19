@@ -2,7 +2,7 @@
 class Buff {
     constructor() {
         /** @type {number} */
-        this.type = Math.floor(Math.random() * Math.floor(3));
+        this.type = Math.floor(Math.random()*4)+1;
         /** @type {number} */
         this.x = Math.random() * 400 + 1;
         /** @type {number} */

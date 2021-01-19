@@ -15,8 +15,9 @@ let gameRoom = new GameRoom();
 setInterval(updateGame, 16);
 
 io.sockets.on("connection", socket => {
-  console.log(`New connection ${socket.id}`);
-  gameRoom.addPlayer(socket);
+    console.log(`New connection ${socket.id}`);
+    gameRoom.addPlayer(socket);
+    console.log(`Number of players  : ${gameRoom.players.length}`);
 });
 
 //TODO determine if useful to intercept from server
@@ -30,6 +31,7 @@ io.sockets.on("disconnect", socket => {
 
 function updateGame() {
     gameRoom.checkBulletCollisions();
+    gameRoom.checkBuffCollision();
     gameRoom.removeEphemeralObjects();
     io.sockets.emit(
         "heartbeat",

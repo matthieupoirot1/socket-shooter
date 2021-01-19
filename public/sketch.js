@@ -19,13 +19,19 @@ function setup() {
 
   serverSocket.on("heartbeat", (serverElements) => {
     //replace and reconstruct players
-    players = serverElements.players.map((serverPlayer) => new Player(serverPlayer));
+    players = serverElements.players.map((serverPlayer) => {
+      return new Player(serverPlayer)
+    });
 
     //replace and reconstruct projectiles
-    projectiles = serverElements.projectiles.map((serverProjectile)=> new Projectile(serverProjectile));
+    projectiles = serverElements.projectiles.map((serverProjectile)=>{
+      return new Projectile(serverProjectile);
+    });
 
     //replace and reconstruct buffs
-    buffs = serverElements.buffs.map((serverBuff)=> new Buff(serverBuff));
+    buffs = serverElements.buffs.map((serverBuff)=> {
+        return new Buff(serverBuff)
+    });
   });
 
   serverSocket.on(

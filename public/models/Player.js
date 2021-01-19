@@ -10,6 +10,7 @@ class Player {
    * @param {number} player.rgb.r Player red value
    * @param {number} player.rgb.g Player green value
    * @param {number} player.rgb.b Player blue value
+   * @param {number} player.score Player score
    */
   constructor(player) {
     this.hp = player.hp;
@@ -17,7 +18,9 @@ class Player {
     this.y = player.y;
     this.id = player.id;
     this.rgb = player.rgb;
+    this.score = player.score;
   }
+
   draw() {
     fill(this.rgb.r, this.rgb.g, this.rgb.b);
     circle(this.x, this.y, 20);
@@ -42,11 +45,11 @@ class Player {
     let yPos = this.y - 30;
 
     let barHeight = 5;
-    let maxBarHeight = 50;
+    let maxBarWidth = 50;
 
     noStroke();
     // Get fraction 0->1 and multiply it by width of bar
-    let drawWidth = (this.hp / 100) * maxBarHeight;
+    let drawWidth = (this.hp / 100) * maxBarWidth;
 
     if(this.hp>0) {
       rect(xPos, yPos, drawWidth, barHeight);
@@ -55,6 +58,10 @@ class Player {
     // Outline
     stroke(0);
     noFill();
-    rect(xPos, yPos, maxBarHeight, barHeight);
+    rect(xPos, yPos, maxBarWidth, barHeight);
+
+    let textXPos = xPos+maxBarWidth + 5;
+    let textYPos = yPos + barHeight;
+    text(this.score, textXPos, textYPos);
   }
 }
