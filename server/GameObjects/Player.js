@@ -48,6 +48,20 @@ class Player {
     this.y = Math.random() * 400 + 1;
     this.damages = 10;
   }
+
+  /**
+   * Method handling death of player from a projectile
+   * @param {Projectile} projectile
+   */
+  handleDeath(projectile) {
+    // Increment winning player score
+    let winner = this.players.find((player)=>{
+      return player.id === projectile.ownerId;
+    });
+
+    winner.score += 1;
+    this.reset();
+  }
 }
 
 module.exports = Player;

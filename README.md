@@ -21,7 +21,7 @@ A very simple way to kick-start your multiplayer game development using express,
 3. `npm start` to get it running!
 
 ## Details 
-The project is very simple, it sets up a client `Player` class and a server `Player`. Every 16ms the server emits the current state of the game to the client. If a new client joins the server a new `Player` will be added to the game and displayed on all clients, it also automatically removes players when they leave the game. These are the standard features I frequently have to reproduce when creating a new multiplayer game, so I hope you find this as useful as I do!
+The project is very simple, it sets up a client `Player` class and a app `Player`. Every 16ms the app emits the current state of the game to the client. If a new client joins the app a new `Player` will be added to the game and displayed on all clients, it also automatically removes players when they leave the game. These are the standard features I frequently have to reproduce when creating a new multiplayer game, so I hope you find this as useful as I do!
 
 ## Demo
 

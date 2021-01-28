@@ -1,14 +1,14 @@
 const express = require("express");
 const socket = require('socket.io');
 const app = express();
-const Player = require("./Player");
+const Player = require("./GameObjects/Player");
 const GameRoom = require("./GameRoom");
 
-let server = app.listen(23000);
-console.log('The server is now running at http://localhost:23000');
+let app = app.listen(23000);
+console.log('The app is now running at http://localhost:23000');
 app.use(express.static("public"));
 
-let io = socket(server);
+let io = socket(app);
 
 let gameRoom = new GameRoom();
 
@@ -20,7 +20,7 @@ io.sockets.on("connection", socket => {
     console.log(`Number of players  : ${gameRoom.players.length}`);
 });
 
-//TODO determine if useful to intercept from server
+//TODO determine if useful to intercept from app
 io.sockets.on("disconnect", socket => {
   io.sockets.emit(
       "disconnect",

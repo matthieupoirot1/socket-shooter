@@ -1,6 +1,6 @@
-const Buff = require("./Buff");
-const Player = require("./Player");
-const Projectile = require("./Projectile");
+const Buff = require("./GameObjects/Buff");
+const Player = require("./GameObjects/Player");
+const Projectile = require("./GameObjects/Projectile");
 
 class GameRoom{
     constructor(){
@@ -89,27 +89,12 @@ class GameRoom{
                         hitPlayer.hp -= winner.damages;
                         this.projectiles = this.projectiles.filter((comparedProj) => comparedProj !== projectile);
                         if(hitPlayer.hp<=0){
-                            this.handleDeath(hitPlayer,projectile);
+                            hitPlayer.handleDeath(projectile);
                         }
                     }
                 }
             });
         });
-    }
-
-    /**
-     * Method handling death of player from a projectile
-     * @param {Player} hitPlayer Dead player
-     * @param {Projectile} projectile
-     */
-    handleDeath(hitPlayer, projectile) {
-        // Increment winning player score
-        let winner = this.players.find((player)=>{
-            return player.id === projectile.ownerId;
-        });
-
-        winner.score += 1;
-        hitPlayer.reset();
     }
 
     generateBuffs() {
