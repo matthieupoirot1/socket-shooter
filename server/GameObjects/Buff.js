@@ -1,4 +1,3 @@
-
 class Buff {
     constructor() {
         /** @type {number} */
@@ -34,5 +33,4 @@ class Buff {
         this.creation = Date.now();
     }
 }
-
 module.exports = Buff;

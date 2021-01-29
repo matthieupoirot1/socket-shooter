@@ -1,9 +1,10 @@
-const Buff = require("./GameObjects/Buff");
 const Player = require("./GameObjects/Player");
 const Projectile = require("./GameObjects/Projectile");
+const Buff = require("./GameObjects/Buff");
 
 class GameRoom{
-    constructor(){
+    constructor(ioServer){
+        this.ioServer = ioServer;
         /** @type {Projectile[]}*/
         this.projectiles = [];
         /** @type {Player[]} */
@@ -11,44 +12,18 @@ class GameRoom{
         /** @type {Buff[]} */
         this.buffs = [];
 
-        // if first player of server
         this.generateBuffs();
+        setInterval(this.updateGame, 16);
     }
 
-    /**
-     * @param playerSocket
-     */
-    addPlayer(playerSocket){
-        let playerId = playerSocket.id;
-
+    createPlayer = (clientSocket) => {
         //creating and pushing new player
-        let clientSocketPlayer = new Player(playerId);
+        let clientSocketPlayer = new Player(clientSocket, this);
         this.players.push(clientSocketPlayer);
         console.log(`Added new player : ${clientSocketPlayer}`);
-
-        //handling player movement
-        playerSocket.on("move", (moveObject)=>{
-            clientSocketPlayer.handlePlayerMovement(moveObject)
-        });
-
-        //handling player shooting
-        playerSocket.on("shoot", (mousePos)=>{
-            this.projectiles.push(new Projectile(
-                {playerY:clientSocketPlayer.y, playerX:clientSocketPlayer.x},
-                mousePos,
-                clientSocketPlayer.rgb,
-                clientSocketPlayer.id
-            ));
-        });
-
-        //if client socket is detected as "disconnected
-        playerSocket.on("disconnect", () => {
-            console.log(`Removing player : ${playerSocket.id}`)
-            this.removePlayer(playerSocket.id);
-        });
     }
 
-    checkBuffCollision(){
+    checkBuffCollision = () => {
         this.players.forEach((hitPlayer)=>{
            this.buffs.forEach((buff)=>{
                let testX = hitPlayer.x;
@@ -75,17 +50,18 @@ class GameRoom{
         });
     }
 
-    checkBulletCollisions(){
+    checkBulletCollisions = () => {
         this.players.forEach((hitPlayer)=>{
             this.projectiles.forEach((projectile)=>{
-                if(hitPlayer.id !== projectile.ownerId) {
+                if(hitPlayer.socket.id !== projectile.ownerId) {
                     let deltaXsquared = Math.pow(hitPlayer.x - projectile.x, 2);
                     let deltaYSquared = Math.pow(hitPlayer.y - projectile.y, 2);
                     let sumRadiiSquared = Math.pow(20 + 5, 2);
                     if (deltaXsquared + deltaYSquared <= sumRadiiSquared) {
                         let winner = this.players.find((player)=>{
-                            return player.id === projectile.ownerId;
+                            return player.socket.id === projectile.ownerId;
                         });
+                        //TODO bug : winner undefined
                         hitPlayer.hp -= winner.damages;
                         this.projectiles = this.projectiles.filter((comparedProj) => comparedProj !== projectile);
                         if(hitPlayer.hp<=0){
@@ -97,18 +73,18 @@ class GameRoom{
         });
     }
 
-    generateBuffs() {
+    generateBuffs = () => {
         setInterval(()=>{
             console.log("hey adding new buff!")
             this.buffs.push(new Buff());
         }, 5000)
     }
 
-    removePlayer(playerId){
-        this.players = this.players.filter(player => player.id !== playerId);
+    removePlayer = (player) => {
+        this.players = this.players.filter(comparedPlayer => comparedPlayer !== player);
     }
 
-    removeEphemeralObjects(){
+    removeEphemeralObjects = () => {
         let time = Date.now();
         this.projectiles = this.projectiles.filter((projectileToRemove) => {
             return time - projectileToRemove.creation < 5000
@@ -116,6 +92,27 @@ class GameRoom{
         this.buffs = this.buffs.filter((buffToRemove) => {
             return time - buffToRemove.creation < 5000
         });
+    }
+
+    updateGame = () => {
+        //TODO : bullet collisions not working
+        this.checkBulletCollisions();
+        this.checkBuffCollision();
+        this.removeEphemeralObjects();
+
+        this.ioServer.sockets.emit(
+            "heartbeat",
+            {
+                players:this.players.map((player)=>player.serverInfos()),
+                projectiles:this.projectiles,
+                buffs:this.buffs
+            }
+        );
+    }
+
+    isFull(){
+        //TODO implement several gameRooms
+        return false;
     }
 }
 

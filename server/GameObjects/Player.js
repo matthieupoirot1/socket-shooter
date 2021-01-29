@@ -1,6 +1,7 @@
+const Projectile =require('./Projectile');
 
 class Player {
-  constructor(socketId) {
+  constructor(clientSocket, gameRoom) {
     /** @type {number} */
     this.hp = 100;
     /** @type {number} */
@@ -8,7 +9,7 @@ class Player {
     /** @type {number} */
     this.y = Math.random() * 400 + 1;
     /** @type {string} */
-    this.id = socketId;
+    this.socket = clientSocket;
     /** @type {{r: number, b: number, g: number}}*/
     this.rgb = {
       r: Math.random() * 255,
@@ -17,6 +18,28 @@ class Player {
     }
     this.score = 0;
     this.damages = 10;
+    this.gameRoom = gameRoom;
+
+    //handling player movement
+    this.socket.on("move", (moveObject)=>{
+      this.handlePlayerMovement(moveObject)
+    });
+
+    //handling player shooting
+    this.socket.on("shoot", (mousePos)=>{
+      gameRoom.projectiles.push(new Projectile(
+          {playerY:this.y, playerX:this.x},
+          mousePos,
+          this.rgb,
+          this.socket.id
+      ));
+    });
+
+    //if client socket is detected as "disconnected
+    this.socket.on("disconnect", () => {
+      console.log(`Removing player with socketId : ${this.socket.id}`)
+      gameRoom.removePlayer(this);
+    });
   }
 
   /**
@@ -55,12 +78,23 @@ class Player {
    */
   handleDeath(projectile) {
     // Increment winning player score
-    let winner = this.players.find((player)=>{
-      return player.id === projectile.ownerId;
+    let winner = this.gameRoom.players.find((player)=>{
+      return player.socket.id === projectile.ownerId;
     });
 
     winner.score += 1;
     this.reset();
+  }
+
+  serverInfos = ()=>{
+    return {
+      x:this.x,
+      y:this.y,
+      hp:this.hp,
+      rgb:this.rgb,
+      score:this.score,
+      damages:this.damages
+    }
   }
 }
 
