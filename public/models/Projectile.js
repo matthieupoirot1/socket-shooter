@@ -23,5 +23,4 @@ class Projectile {
         fill(this.rgb.r, this.rgb.g, this.rgb.b);
         circle(this.x, this.y, 5);
     }
-
 }
